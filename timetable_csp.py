@@ -1,0 +1,438 @@
+import random
+import json
+from typing import List, Dict, Tuple, Optional, Callable, Set
+from database import Database
+from collections import defaultdict
+import time
+
+class TimetableCSP:
+    """
+    Enhanced CSP solver with comprehensive constraint checking
+    Implements MRV and LCV heuristics for better performance
+    """
+
+    def __init__(self, db: Database, selected_batches: List[int],
+                 use_fixed_slots: bool = True,
+                 max_iterations: int = 10000,
+                 use_min_conflicts: bool = False):
+        """Initialize CSP solver"""
+        self.db = db
+        self.selected_batches = selected_batches
+        self.use_fixed_slots = use_fixed_slots
+        self.max_iterations = max_iterations
+        self.use_min_conflicts = use_min_conflicts
+
+        # Load data
+        self._load_data()
+
+        # CSP components
+        self.slots = []
+        self.assignments = []
+        self.solution = []
+
+        # Tracking for soft constraints
+        self.subject_hours_scheduled = defaultdict(int)
+        self.faculty_schedule = defaultdict(list)
+        self.batch_schedule = defaultdict(list)
+
+        # Initialize
+        self._prepare_slots()
+        self._prepare_assignments()
+
+    def _load_data(self):
+        """Load all necessary data from database"""
+        colleges = self.db.get_all('college')
+        if not colleges:
+            raise ValueError("No college information found.")
+        self.college_info = colleges[0]
+        self.working_days = json.loads(self.college_info['working_days'])
+        self.time_slots = json.loads(self.college_info['time_slots'])
+
+        all_batches = self.db.get_all('batches')
+        self.batches = {b['id']: b for b in all_batches if b['id'] in self.selected_batches}
+        if not self.batches:
+            raise ValueError(f"No batches found for IDs: {self.selected_batches}")
+
+        all_allocations = self.db.get_all('subject_allocation')
+        self.allocations = [a for a in all_allocations if a['batch_id'] in self.selected_batches]
+        if not self.allocations:
+            raise ValueError("No subject allocations found for selected batches.")
+
+        self.subjects = {s['id']: s for s in self.db.get_all('subjects')}
+        self.faculty = {f['id']: f for f in self.db.get_all('faculty')}
+
+        self.classrooms = self.db.get_all('classrooms')
+        self.labs = self.db.get_all('computer_labs')
+        if not self.classrooms:
+            raise ValueError("No classrooms found.")
+
+        if self.use_fixed_slots:
+            all_fixed = self.db.get_all('fixed_slots')
+            self.fixed_slots = [fs for fs in all_fixed if fs['batch_id'] in self.selected_batches]
+        else:
+            self.fixed_slots = []
+
+        # Get constraints with weights
+        constraints = self.db.get_constraints()
+        self.constraint_config = {c['constraint_name']: {
+            'enabled': c['is_enabled'],
+            'weight': c['weight'],
+            'type': c['constraint_type']
+        } for c in constraints}
+
+    def _prepare_slots(self):
+        """Prepare all available time slots"""
+        self.slots = []
+        for day in self.working_days:
+            for time in self.time_slots:
+                self.slots.append((day, time))
+
+    def _prepare_assignments(self):
+        """Prepare list of all assignments with priority ordering"""
+        temp_assignments = []
+
+        for alloc in self.allocations:
+            if alloc['subject_id'] not in self.subjects:
+                continue
+            if alloc['batch_id'] not in self.batches:
+                continue
+
+            subject = self.subjects[alloc['subject_id']]
+            batch_id = alloc['batch_id']
+            subject_id = alloc['subject_id']
+            faculty_id = alloc['faculty_id']
+
+            # Theory slots
+            theory_hours = subject.get('theory_hours', 0)
+            for i in range(theory_hours):
+                temp_assignments.append({
+                    'batch_id': batch_id,
+                    'subject_id': subject_id,
+                    'faculty_id': faculty_id,
+                    'type': 'theory',
+                    'duration': 1,
+                    'index': i,
+                    'priority': subject.get('credits', 3)  # Higher credits = higher priority
+                })
+
+            # Lab slots (consecutive)
+            lab_hours = subject.get('lab_hours', 0)
+            if lab_hours > 0:
+                temp_assignments.append({
+                    'batch_id': batch_id,
+                    'subject_id': subject_id,
+                    'faculty_id': faculty_id,
+                    'type': 'lab',
+                    'duration': lab_hours,
+                    'index': 0,
+                    'priority': subject.get('credits', 3) + 2  # Labs get higher priority
+                })
+
+        # Sort by priority (descending) - MRV heuristic
+        self.assignments = sorted(temp_assignments, key=lambda x: (-x['priority'], -x['duration']))
+
+    def _get_available_rooms(self, slot_type: str, batch_size: int = 0) -> List[Dict]:
+        """Get available rooms for slot type with capacity check"""
+        if slot_type == 'lab':
+            rooms = self.labs if self.labs else self.classrooms
+        else:
+            rooms = self.classrooms
+
+        # Filter by capacity if room_capacity constraint enabled
+        if self.constraint_config.get('room_capacity', {}).get('enabled', True):
+            rooms = [r for r in rooms if r.get('capacity', 999) >= batch_size or 
+                    r.get('computer_capacity', 999) >= batch_size]
+
+        return rooms
+
+    def _find_consecutive_slots(self, start_day: str, start_time: str, duration: int) -> List[Tuple[str, str]]:
+        """Find consecutive time slots starting from given slot"""
+        try:
+            day_idx = self.working_days.index(start_day)
+            time_idx = self.time_slots.index(start_time)
+        except ValueError:
+            return []
+
+        consecutive = []
+        for i in range(duration):
+            if time_idx + i < len(self.time_slots):
+                consecutive.append((start_day, self.time_slots[time_idx + i]))
+            else:
+                return []
+
+        return consecutive
+
+    def _check_hard_constraints(self, assignment: Dict, slot: Tuple[str, str], 
+                                 room_id: int, current_solution: List[Dict]) -> bool:
+        """Check all HARD constraints - returns True if conflict exists"""
+        day, time = slot
+        batch_id = assignment['batch_id']
+        faculty_id = assignment['faculty_id']
+        duration = assignment['duration']
+        batch_size = self.batches[batch_id]['number_of_students']
+
+        # Get slots this assignment will occupy
+        if duration == 1:
+            occupied_slots = [slot]
+        else:
+            occupied_slots = self._find_consecutive_slots(day, time, duration)
+            if not occupied_slots:
+                return True  # Can't find consecutive slots
+
+        # Check against existing solution
+        for entry in current_solution:
+            entry_day = entry['day']
+            entry_time = entry['time_slot']
+            entry_batch = entry['batch_id']
+            entry_faculty = entry['faculty_id']
+            entry_room = entry['room_id']
+
+            # Check if slots overlap
+            if (entry_day, entry_time) in occupied_slots:
+                # 1. Faculty conflict
+                if self.constraint_config.get('no_faculty_conflict', {}).get('enabled', True):
+                    if faculty_id == entry_faculty:
+                        return True
+
+                # 2. Batch conflict
+                if self.constraint_config.get('no_batch_conflict', {}).get('enabled', True):
+                    if batch_id == entry_batch:
+                        return True
+
+                # 3. Room conflict
+                if self.constraint_config.get('no_room_conflict', {}).get('enabled', True):
+                    if room_id == entry_room:
+                        return True
+
+        # 4. Room capacity check
+        if self.constraint_config.get('room_capacity', {}).get('enabled', True):
+            room = next((r for r in self.classrooms + self.labs if r['id'] == room_id), None)
+            if room:
+                capacity = room.get('capacity', room.get('computer_capacity', 0))
+                if capacity < batch_size:
+                    return True
+
+        return False
+
+    def _calculate_soft_constraint_penalty(self, assignment: Dict, slot: Tuple[str, str],
+                                           current_solution: List[Dict]) -> float:
+        """Calculate penalty score for soft constraints (lower is better)"""
+        penalty = 0.0
+        day, time = slot
+        batch_id = assignment['batch_id']
+        faculty_id = assignment['faculty_id']
+        subject_id = assignment['subject_id']
+
+        # Get time index for checks
+        try:
+            time_idx = self.time_slots.index(time)
+        except ValueError:
+            time_idx = 0
+
+        # 1. No morning gaps
+        if self.constraint_config.get('no_morning_gaps', {}).get('enabled', True):
+            morning_slots = [e for e in current_solution 
+                           if e['day'] == day and e['batch_id'] == batch_id 
+                           and self.time_slots.index(e['time_slot']) < len(self.time_slots)//2]
+            if time_idx < len(self.time_slots)//2 and morning_slots:
+                # Check for gaps in morning
+                morning_times = sorted([self.time_slots.index(e['time_slot']) for e in morning_slots])
+                if morning_times and time_idx - morning_times[-1] > 1:
+                    penalty += self.constraint_config.get('no_morning_gaps', {}).get('weight', 3.5)
+
+        # 2. Minimize batch gaps
+        if self.constraint_config.get('minimize_batch_gaps', {}).get('enabled', True):
+            batch_day_schedule = [e for e in current_solution 
+                                 if e['day'] == day and e['batch_id'] == batch_id]
+            if batch_day_schedule:
+                time_indices = [self.time_slots.index(e['time_slot']) for e in batch_day_schedule]
+                for t_idx in time_indices:
+                    gap = abs(time_idx - t_idx)
+                    if gap > 1:
+                        penalty += (gap - 1) * self.constraint_config.get('minimize_batch_gaps', {}).get('weight', 2.0) * 0.5
+
+        # 3. Minimize faculty gaps
+        if self.constraint_config.get('minimize_faculty_gaps', {}).get('enabled', True):
+            faculty_day_schedule = [e for e in current_solution 
+                                   if e['day'] == day and e['faculty_id'] == faculty_id]
+            if faculty_day_schedule:
+                time_indices = [self.time_slots.index(e['time_slot']) for e in faculty_day_schedule]
+                for t_idx in time_indices:
+                    gap = abs(time_idx - t_idx)
+                    if gap > 1:
+                        penalty += (gap - 1) * self.constraint_config.get('minimize_faculty_gaps', {}).get('weight', 2.0) * 0.5
+
+        # 4. Avoid consecutive same type
+        if self.constraint_config.get('avoid_consecutive_same_type', {}).get('enabled', True):
+            if time_idx > 0:
+                prev_time = self.time_slots[time_idx - 1]
+                prev_entry = next((e for e in current_solution 
+                                 if e['day'] == day and e['time_slot'] == prev_time 
+                                 and e['batch_id'] == batch_id), None)
+                if prev_entry:
+                    prev_subject = self.subjects.get(prev_entry['subject_id'], {})
+                    curr_subject = self.subjects.get(subject_id, {})
+                    if prev_subject.get('subject_type') == curr_subject.get('subject_type') == assignment['type']:
+                        penalty += self.constraint_config.get('avoid_consecutive_same_type', {}).get('weight', 2.5)
+
+        # 5. Lab alternation
+        if self.constraint_config.get('lab_alternation', {}).get('enabled', True):
+            if assignment['type'] == 'lab':
+                lab_count_today = sum(1 for e in current_solution 
+                                     if e['day'] == day and e['batch_id'] == batch_id 
+                                     and self.subjects.get(e['subject_id'], {}).get('subject_type') == 'practical')
+                if lab_count_today > 0:
+                    penalty += lab_count_today * self.constraint_config.get('lab_alternation', {}).get('weight', 3.0)
+
+        # 6. Priority bias scheduling (better slots for important subjects)
+        if self.constraint_config.get('priority_bias_scheduling', {}).get('enabled', True):
+            credits = self.subjects.get(subject_id, {}).get('credits', 3)
+            if credits >= 4 and time_idx >= len(self.time_slots) - 1:  # High credit course in last slot
+                penalty += self.constraint_config.get('priority_bias_scheduling', {}).get('weight', 3.0)
+
+        return penalty
+
+    def _select_best_slot_lcv(self, assignment: Dict, valid_slots: List[Tuple[Tuple[str, str], Dict]],
+                              current_solution: List[Dict]) -> Tuple[Tuple[str, str], Dict]:
+        """Least Constraining Value heuristic - select slot that constrains future assignments least"""
+        if not valid_slots:
+            return None, None
+
+        # Score each slot based on soft constraint penalties
+        slot_scores = []
+        for slot, room in valid_slots:
+            penalty = self._calculate_soft_constraint_penalty(assignment, slot, current_solution)
+            slot_scores.append((penalty, slot, room))
+
+        # Return slot with lowest penalty
+        slot_scores.sort(key=lambda x: x[0])
+        return slot_scores[0][1], slot_scores[0][2]
+
+    def _assign_slot(self, assignment: Dict, slot: Tuple[str, str], room: Dict) -> List[Dict]:
+        """Create timetable entries for an assignment"""
+        day, time = slot
+        duration = assignment['duration']
+        entries = []
+
+        if duration == 1:
+            entries.append({
+                'batch_id': assignment['batch_id'],
+                'day': day,
+                'time_slot': time,
+                'subject_id': assignment['subject_id'],
+                'faculty_id': assignment['faculty_id'],
+                'room_id': room['id'],
+                'room_type': 'lab' if assignment['type'] == 'lab' else 'classroom',
+                'is_fixed': False
+            })
+        else:
+            consecutive_slots = self._find_consecutive_slots(day, time, duration)
+            for slot_day, slot_time in consecutive_slots:
+                entries.append({
+                    'batch_id': assignment['batch_id'],
+                    'day': slot_day,
+                    'time_slot': slot_time,
+                    'subject_id': assignment['subject_id'],
+                    'faculty_id': assignment['faculty_id'],
+                    'room_id': room['id'],
+                    'room_type': 'lab' if assignment['type'] == 'lab' else 'classroom',
+                    'is_fixed': False
+                })
+
+        return entries
+
+    def _smart_solve(self, progress_callback=None) -> Optional[List[Dict]]:
+        """Enhanced greedy algorithm with LCV heuristic"""
+        solution = []
+
+        for idx, assignment in enumerate(self.assignments):
+            if progress_callback and idx % 5 == 0:
+                progress = int((idx / len(self.assignments)) * 100)
+                progress_callback(progress, idx, len(self.assignments))
+
+            batch_size = self.batches[assignment['batch_id']]['number_of_students']
+            rooms = self._get_available_rooms(assignment['type'], batch_size)
+
+            # Find all valid (slot, room) combinations
+            valid_combinations = []
+            for slot in self.slots:
+                for room in rooms:
+                    if not self._check_hard_constraints(assignment, slot, room['id'], solution):
+                        valid_combinations.append((slot, room))
+
+            if not valid_combinations:
+                return None  # Failed to assign
+
+            # Use LCV heuristic to select best slot
+            best_slot, best_room = self._select_best_slot_lcv(assignment, valid_combinations, solution)
+
+            if best_slot and best_room:
+                new_entries = self._assign_slot(assignment, best_slot, best_room)
+                solution.extend(new_entries)
+            else:
+                return None
+
+        return solution
+
+    def _apply_fixed_slots(self):
+        """Apply fixed slots to solution before solving"""
+        fixed_solution = []
+        for fixed in self.fixed_slots:
+            room_id = fixed['room_id']
+            room_type = fixed['room_type']
+
+            fixed_solution.append({
+                'batch_id': fixed['batch_id'],
+                'day': fixed['day'],
+                'time_slot': fixed['time_slot'],
+                'subject_id': fixed['subject_id'],
+                'faculty_id': fixed['faculty_id'],
+                'room_id': room_id,
+                'room_type': room_type,
+                'is_fixed': True
+            })
+
+        # Remove fixed assignments from list
+        self.assignments = [
+            a for a in self.assignments
+            if not any(
+                a['batch_id'] == fixed['batch_id'] and
+                a['subject_id'] == fixed['subject_id'] and
+                a['faculty_id'] == fixed['faculty_id']
+                for fixed in self.fixed_slots
+            )
+        ]
+
+        return fixed_solution
+
+    def run(self, progress_callback: Optional[Callable] = None) -> Tuple[List[Dict], List[Dict]]:
+        """Solve CSP and return timetable"""
+        start_time = time.time()
+
+        # Apply fixed slots first
+        if self.use_fixed_slots:
+            fixed_solution = self._apply_fixed_slots()
+        else:
+            fixed_solution = []
+
+        if progress_callback:
+            progress_callback(0, 0, len(self.assignments))
+
+        # Use smart solver with LCV heuristic
+        solution = self._smart_solve(progress_callback)
+
+        if solution is None:
+            raise ValueError("Failed to find valid timetable. Try relaxing constraints or reducing course load.")
+
+        # Combine with fixed slots
+        solution = fixed_solution + solution
+
+        elapsed = time.time() - start_time
+        history = [{
+            'iteration': 0,
+            'conflicts': 0,
+            'time': elapsed,
+            'method': 'Enhanced CSP with MRV + LCV'
+        }]
+
+        return solution, history

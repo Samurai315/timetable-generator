@@ -1,0 +1,764 @@
+{
+  "version_name": "CSP_1762790719",
+  "algorithm": "CSP",
+  "created_by": "admin",
+  "created_at": "00:00:00",
+  "fitness_score": 1000.0,
+  "generation_config": {
+    "algorithm": "csp",
+    "constraints_config": {
+      "avoid_consecutive_same_type": true,
+      "no_morning_gaps": true,
+      "enable_saturday_flexibility": false,
+      "lab_alternation_strictness": 5
+    },
+    "max_iterations": 10000
+  },
+  "timetable": [
+    {
+      "batch_id": 3,
+      "day": "Monday",
+      "time_slot": "15:00-16:00",
+      "subject_id": 20,
+      "faculty_id": 8,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Monday",
+      "time_slot": "16:00-17:00",
+      "subject_id": 20,
+      "faculty_id": 8,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Wednesday",
+      "time_slot": "15:00-16:00",
+      "subject_id": 20,
+      "faculty_id": 8,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Wednesday",
+      "time_slot": "16:00-17:00",
+      "subject_id": 20,
+      "faculty_id": 8,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Saturday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 20,
+      "faculty_id": 8,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Saturday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 20,
+      "faculty_id": 8,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Friday",
+      "time_slot": "16:00-17:00",
+      "subject_id": 21,
+      "faculty_id": 3,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Saturday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 22,
+      "faculty_id": 9,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Saturday",
+      "time_slot": "15:00-16:00",
+      "subject_id": 22,
+      "faculty_id": 9,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Saturday",
+      "time_slot": "16:00-17:00",
+      "subject_id": 22,
+      "faculty_id": 9,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Monday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 23,
+      "faculty_id": 10,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Monday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 23,
+      "faculty_id": 10,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Monday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 24,
+      "faculty_id": 11,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Monday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 24,
+      "faculty_id": 11,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Tuesday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 25,
+      "faculty_id": 12,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Tuesday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 25,
+      "faculty_id": 12,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 2,
+      "day": "Monday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 26,
+      "faculty_id": 13,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 2,
+      "day": "Monday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 26,
+      "faculty_id": 13,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Wednesday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 31,
+      "faculty_id": 18,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Wednesday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 31,
+      "faculty_id": 18,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Friday",
+      "time_slot": "16:00-17:00",
+      "subject_id": 28,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Friday",
+      "time_slot": "15:00-16:00",
+      "subject_id": 28,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Thursday",
+      "time_slot": "15:00-16:00",
+      "subject_id": 28,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Thursday",
+      "time_slot": "16:00-17:00",
+      "subject_id": 28,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Saturday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 22,
+      "faculty_id": 9,
+      "room_id": 6,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Wednesday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 1,
+      "faculty_id": 1,
+      "room_id": 5,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Thursday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 1,
+      "faculty_id": 1,
+      "room_id": 5,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 1,
+      "day": "Friday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 1,
+      "faculty_id": 1,
+      "room_id": 5,
+      "room_type": "classroom",
+      "is_fixed": true
+    },
+    {
+      "batch_id": 3,
+      "day": "Monday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 12,
+      "faculty_id": 6,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Tuesday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 12,
+      "faculty_id": 6,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Wednesday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 12,
+      "faculty_id": 6,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Thursday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 14,
+      "faculty_id": 4,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Friday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 14,
+      "faculty_id": 4,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Saturday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 14,
+      "faculty_id": 4,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Monday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 16,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Tuesday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 16,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Wednesday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 16,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Thursday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 18,
+      "faculty_id": 2,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Friday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 18,
+      "faculty_id": 2,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Saturday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 18,
+      "faculty_id": 2,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Monday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 4,
+      "faculty_id": 6,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Monday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 4,
+      "faculty_id": 6,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Tuesday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 6,
+      "faculty_id": 2,
+      "room_id": 2,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Tuesday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 6,
+      "faculty_id": 2,
+      "room_id": 2,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Wednesday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 8,
+      "faculty_id": 7,
+      "room_id": 2,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Wednesday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 8,
+      "faculty_id": 7,
+      "room_id": 2,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Thursday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 10,
+      "faculty_id": 3,
+      "room_id": 2,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Thursday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 10,
+      "faculty_id": 3,
+      "room_id": 2,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Tuesday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 13,
+      "faculty_id": 6,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Tuesday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 13,
+      "faculty_id": 6,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Monday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 15,
+      "faculty_id": 4,
+      "room_id": 2,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Monday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 15,
+      "faculty_id": 4,
+      "room_id": 2,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Thursday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 17,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Thursday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 17,
+      "faculty_id": 5,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Wednesday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 19,
+      "faculty_id": 2,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 3,
+      "day": "Wednesday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 19,
+      "faculty_id": 2,
+      "room_id": 1,
+      "room_type": "lab",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Friday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 3,
+      "faculty_id": 6,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Saturday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 3,
+      "faculty_id": 6,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Monday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 5,
+      "faculty_id": 2,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Thursday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 5,
+      "faculty_id": 2,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Tuesday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 7,
+      "faculty_id": 7,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Wednesday",
+      "time_slot": "12:00-13:00",
+      "subject_id": 7,
+      "faculty_id": 7,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Friday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 9,
+      "faculty_id": 3,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Saturday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 9,
+      "faculty_id": 3,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Friday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 11,
+      "faculty_id": 4,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Saturday",
+      "time_slot": "11:00-12:00",
+      "subject_id": 11,
+      "faculty_id": 4,
+      "room_id": 1,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 2,
+      "day": "Monday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 11,
+      "faculty_id": 4,
+      "room_id": 2,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 1,
+      "day": "Monday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 27,
+      "faculty_id": 15,
+      "room_id": 3,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 1,
+      "day": "Tuesday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 27,
+      "faculty_id": 15,
+      "room_id": 3,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 1,
+      "day": "Wednesday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 29,
+      "faculty_id": 16,
+      "room_id": 3,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 1,
+      "day": "Thursday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 29,
+      "faculty_id": 16,
+      "room_id": 3,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 1,
+      "day": "Friday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 29,
+      "faculty_id": 16,
+      "room_id": 3,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 1,
+      "day": "Saturday",
+      "time_slot": "10:00-11:00",
+      "subject_id": 30,
+      "faculty_id": 8,
+      "room_id": 3,
+      "room_type": "classroom",
+      "is_fixed": false
+    },
+    {
+      "batch_id": 1,
+      "day": "Monday",
+      "time_slot": "14:00-15:00",
+      "subject_id": 30,
+      "faculty_id": 8,
+      "room_id": 3,
+      "room_type": "classroom",
+      "is_fixed": false
+    }
+  ],
+  "metadata": {
+    "total_slots": 74,
+    "selected_batches": [],
+    "constraints_used": []
+  }
+}
